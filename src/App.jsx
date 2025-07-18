@@ -90,6 +90,7 @@ function GameController() {
   const [score, setScore] = useState(0);
   const [maxScore, setMaxScore] = useState(0);
   const [agents, setAgents] = useState([]);
+  const [playingRound, setPlayingRound] = useState(true);
 
   useEffect(() => {
     // getData().then((json) => setAgents(json));
@@ -108,16 +109,6 @@ function GameController() {
     );
   }
 
-  function handleCardClick(event, uuid, clicked) {
-    if (!clicked) {
-      setClicked(uuid);
-      setScore((prev) => prev + 1);
-      shuffleAgents();
-    } else {
-      endRound();
-    }
-  }
-
   function shuffleAgents() {
     setAgents((agents) => {
       const array = [...agents];
@@ -130,24 +121,38 @@ function GameController() {
     if (score > maxScore) {
       setMaxScore(score);
     }
-    setAgents(initData());
     setScore(0);
+    setPlayingRound(false);
   }
 
-  function resetClickedCards() {
-    setAgents((agents) =>
-      agents.map((agent) => {
-        return { ...agent, clicked: false };
-      })
-    );
+  // Event Handlers
+
+  function handleCardClick(event, uuid, clicked) {
+    if (!clicked) {
+      setClicked(uuid);
+      setScore((prev) => prev + 1);
+      shuffleAgents();
+    } else {
+      endRound();
+    }
   }
+
+  function handleStartBtn(event) {
+    setAgents(initData());
+    setPlayingRound((playingRound) => !playingRound);
+  }
+
   return (
     <>
       <h1>Memory Card Game</h1>
       <p>
         Score:{score}, MaxScore:{maxScore}
       </p>
-      <Cards agents={agents} handleCardClick={handleCardClick} />
+      {playingRound ? (
+        <Cards agents={agents} handleCardClick={handleCardClick} />
+      ) : (
+        <button onClick={handleStartBtn}>Start</button>
+      )}
     </>
   );
 }
