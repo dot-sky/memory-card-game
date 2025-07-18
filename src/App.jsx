@@ -1,40 +1,125 @@
-import { useState } from "react";
+import { Fragment, useEffect, useState } from "react";
+import json from "./agentsJSON.json";
 import "./App.css";
 
-function Card({ img, desc }) {
+function Card({ uuid, displayName, image, clicked, handleCardClick }) {
   return (
-    <div>
-      <img src={img} alt="" />
-      <p>{desc}</p>
+    <div
+      className="card"
+      onClick={(event) => handleCardClick(event, uuid, clicked)}
+    >
+      {/* <div
+        className="img-container"
+        style={{ backgroundImage: `url(${image})` }}
+      ></div> */}
+      <img src={image} alt="" />
+      <p>{displayName}</p>
     </div>
   );
 }
 
-function Cards({ data }) {
+function Cards({ agents, handleCardClick }) {
   return (
-    <>
-      {data.map((card) => (
-        <Card key={card.id} {...card} />
+    <div className="card-grid">
+      {agents.map((agent) => (
+        <Card key={agent.uuid} {...agent} handleCardClick={handleCardClick} />
       ))}
-    </>
+    </div>
   );
+}
+
+async function getData() {
+  const url = "https://valorant-api.com/v1/agents";
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+    }
+
+    const json = await response.json();
+    return json.data;
+  } catch (error) {
+    console.error(error.message);
+  }
+}
+
+function processData(agents) {
+  const newAgents = [];
+  for (const agent of agents) {
+    if (agent.isPlayableCharacter) {
+      newAgents.push({
+        uuid: agent.uuid,
+        displayName: agent.displayName,
+        image: agent.fullPortrait,
+        clicked: false,
+      });
+    }
+  }
+  return newAgents;
 }
 
 function GameController() {
   const [score, setScore] = useState(0);
   const [maxScore, setMaxScore] = useState(0);
+  const [agents, setAgents] = useState([]);
 
-  const data = [
-    { id: 0, img: "agent1", desc: "agent1" },
-    { id: 1, img: "agent2", desc: "agent2" },
-    { id: 2, img: "agent3", desc: "agent3" },
-    { id: 3, img: "agent4", desc: "agent4" },
-  ];
+  useEffect(() => {
+    // getData().then((json) => setAgents(json));
+    setAgents(processData(json.data));
+  }, []);
+
+  function setClicked(uuid) {
+    setAgents(
+      agents.map((agent) => {
+        if (agent.uuid === uuid) {
+          return { ...agent, clicked: true };
+        } else {
+          return agent;
+        }
+      })
+    );
+  }
+
+  function handleCardClick(event, uuid, clicked) {
+    if (!clicked) {
+      setClicked(uuid);
+      setScore((prev) => prev + 1);
+    } else {
+      endRound();
+    }
+    shuffleAgents();
+  }
+
+  function shuffleAgents() {
+    setAgents((agents) => {
+      const array = [...agents];
+      let currentIndex = array.length;
+      while (currentIndex !== 0) {
+        const randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+        [array[currentIndex], array[randomIndex]] = [
+          array[randomIndex],
+          array[currentIndex],
+        ];
+      }
+      return array;
+    });
+  }
+
+  function endRound() {
+    if (score > maxScore) {
+      setMaxScore(score);
+    }
+    setScore(0);
+  }
 
   return (
     <>
       <h1>Memory Card Game</h1>
-      <Cards data={data} />
+      <p>
+        Score:{score}, MaxScore:{maxScore}
+      </p>
+      <Cards agents={agents} handleCardClick={handleCardClick} />
     </>
   );
 }
