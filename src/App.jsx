@@ -54,7 +54,6 @@ function processData(agents) {
         uuid: agent.uuid,
         displayName: agent.displayName,
         image: agent.fullPortrait,
-        clicked: false,
       });
     }
   }
@@ -63,7 +62,15 @@ function processData(agents) {
 
 function initData() {
   shuffleArray(agentsProcessed);
-  return agentsProcessed.slice(0, DECK_SIZE);
+  const newAgents = [];
+  for (let index in agentsProcessed) {
+    if (index < DECK_SIZE) {
+      newAgents[index] = { ...agentsProcessed[index], clicked: false };
+    } else {
+      break;
+    }
+  }
+  return newAgents;
 }
 
 function shuffleArray(array) {
@@ -123,7 +130,7 @@ function GameController() {
     if (score > maxScore) {
       setMaxScore(score);
     }
-    resetClickedCards();
+    setAgents(initData());
     setScore(0);
   }
 
