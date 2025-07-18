@@ -1,6 +1,9 @@
 import { Fragment, useEffect, useState } from "react";
-import json from "./agentsJSON.json";
+import agentsJSON from "./agentsJSON.json";
 import "./App.css";
+
+const DECK_SIZE = 12;
+const agentsProcessed = processData(agentsJSON.data);
 
 function Card({ uuid, displayName, image, clicked, handleCardClick }) {
   return (
@@ -58,6 +61,24 @@ function processData(agents) {
   return newAgents;
 }
 
+function initData() {
+  shuffleArray(agentsProcessed);
+  return agentsProcessed.slice(0, DECK_SIZE);
+}
+
+function shuffleArray(array) {
+  let currentIndex = array.length;
+  while (currentIndex !== 0) {
+    const randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex],
+      array[currentIndex],
+    ];
+  }
+  return array;
+}
+
 function GameController() {
   const [score, setScore] = useState(0);
   const [maxScore, setMaxScore] = useState(0);
@@ -65,7 +86,7 @@ function GameController() {
 
   useEffect(() => {
     // getData().then((json) => setAgents(json));
-    setAgents(processData(json.data));
+    setAgents(initData());
   }, []);
 
   function setClicked(uuid) {
@@ -84,24 +105,16 @@ function GameController() {
     if (!clicked) {
       setClicked(uuid);
       setScore((prev) => prev + 1);
+      shuffleAgents();
     } else {
       endRound();
     }
-    shuffleAgents();
   }
 
   function shuffleAgents() {
     setAgents((agents) => {
       const array = [...agents];
-      let currentIndex = array.length;
-      while (currentIndex !== 0) {
-        const randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex -= 1;
-        [array[currentIndex], array[randomIndex]] = [
-          array[randomIndex],
-          array[currentIndex],
-        ];
-      }
+      shuffleArray(array);
       return array;
     });
   }
@@ -110,9 +123,17 @@ function GameController() {
     if (score > maxScore) {
       setMaxScore(score);
     }
+    resetClickedCards();
     setScore(0);
   }
 
+  function resetClickedCards() {
+    setAgents((agents) =>
+      agents.map((agent) => {
+        return { ...agent, clicked: false };
+      })
+    );
+  }
   return (
     <>
       <h1>Memory Card Game</h1>
