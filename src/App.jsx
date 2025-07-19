@@ -15,8 +15,12 @@ function Card({ uuid, displayName, image, clicked, handleCardClick }) {
         className="img-container"
         style={{ backgroundImage: `url(${image})` }}
       ></div> */}
-      <img src={image} alt="" />
-      <p>{displayName}</p>
+      <div className="img-wrapper">
+        <img src={image} alt="" />
+      </div>
+      <div className="card-name">
+        <h3>{displayName}</h3>
+      </div>
     </div>
   );
 }
@@ -144,14 +148,24 @@ function GameController() {
 
   return (
     <>
-      <h1>Memory Card Game</h1>
-      <p>
-        Score:{score}, MaxScore:{maxScore}
-      </p>
+      <div className="header">
+        <div className="title-info">
+          <h1>Memory Card Game</h1>
+          <p>
+            Click on the cards to earn points, but don't click on the same card
+            twice.
+          </p>
+        </div>
+        <div>
+          <h2>Score: {score}</h2>
+          <h2>MaxScore: {maxScore}</h2>
+        </div>
+      </div>
+
       {playingRound ? (
         <Cards agents={agents} handleCardClick={handleCardClick} />
       ) : (
-        <button onClick={handleStartBtn}>Start</button>
+        <button onClick={handleStartBtn}>Play Again</button>
       )}
     </>
   );
