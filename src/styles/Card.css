@@ -1,0 +1,52 @@
+.card {
+  border: 2px solid var(--background-800);
+  cursor: pointer;
+}
+
+.card img {
+  width: 100%;
+  object-fit: cover;
+  object-position: center;
+  aspect-ratio: 3 / 4;
+
+  transition: transform 0.4s ease-out;
+  transform-origin: 50% 25%;
+  transform: scale(1.7);
+}
+
+.img-wrapper {
+  overflow: hidden;
+  background-color: var(--background-900);
+
+  background-size: cover;
+  background-position: left center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+
+  background: linear-gradient(
+    180deg,
+    var(--background-950) 0%,
+    var(--background-900) 75%,
+    var(--background-800) 100%
+  );
+}
+
+.card-name {
+  padding: 4px var(--space-2x);
+  background-color: var(--text);
+  color: var(--background);
+}
+
+/* Hover Animations  */
+.card:hover {
+  box-shadow: 0 0 var(--space-3x) var(--secondary);
+}
+
+.card:hover img {
+  transition: transform 0.5s ease;
+  transform: scale(1.85);
+}
+
+.card:hover .card-name h4 {
+  color: var(--secondary);
+}

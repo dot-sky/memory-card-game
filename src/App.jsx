@@ -1,25 +1,10 @@
 import { useEffect, useState } from "react";
 import agentsJSON from "./agentsJSON.json";
 import "./App.css";
+import { Card } from "./components/Card";
 
 const DECK_SIZE = 12;
 const agentsProcessed = processData(agentsJSON.data);
-
-function Card({ uuid, displayName, image, bgImage, clicked, handleCardClick }) {
-  return (
-    <div
-      className="card"
-      onClick={(event) => handleCardClick(event, uuid, clicked)}
-    >
-      <div className="img-wrapper">
-        <img src={image} alt="" />
-      </div>
-      <div className="card-name">
-        <h4>{displayName}</h4>
-      </div>
-    </div>
-  );
-}
 
 function Cards({ agents, handleCardClick, blur }) {
   const classList = "card-grid" + (blur ? " blur" : "");
