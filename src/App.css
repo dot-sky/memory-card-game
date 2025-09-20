@@ -3,6 +3,7 @@
 :root {
   --text: #e3ebf3;
   --background: #10151a;
+  --background-alpha80: #10151ac0;
   --primary: #1d548c;
   --secondary: #17599b;
   --accent: #f84559;
@@ -67,13 +68,23 @@
   --accent-900: #310207;
   --accent-950: #190104;
 
+  --space-half: 8px;
   --space-1x: 8px;
   --space-2x: 16px;
   --space-3x: 24px;
   --space-4x: 32px;
   --space-5x: 40px;
 }
-
+/* CSS Reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+}
+/* End CSS Reset */
 body {
   font-family: "Inter";
   font-weight: 400;
@@ -89,10 +100,11 @@ h4,
 h5 {
   font-family: "Lexend";
   font-weight: 700;
-  margin: 0;
 }
 
 html {
+  display: flex;
+  justify-content: center;
   font-size: 100%;
 } /* 16px */
 
@@ -122,20 +134,37 @@ small {
 
 #root {
   max-width: 1680px;
-  margin: 0 auto;
-  padding: var(--space-4x);
+  margin: var(--space-4x);
 }
 
 /* Header */
 .header {
   display: flex;
   justify-content: space-between;
+  margin-bottom: var(--space-3x);
+  gap: var(--space-4x);
 }
-/* Card Grid */
+.header > .game-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4x);
+}
+
+/* Card container*/
+.cards {
+  position: relative;
+}
+
 .card-grid {
+  padding: 3px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: var(--space-3x);
+}
+
+.blur {
+  filter: blur(1px);
 }
 /* Card */
 
@@ -155,28 +184,166 @@ small {
   width: 100%;
   object-fit: cover;
   object-position: center;
-  aspect-ratio: 3 / 5;
+  aspect-ratio: 3 / 4;
 
   transition: transform 0.4s ease-out;
   transform-origin: 50% 25%;
-  transform: scale(1.4);
+  /* transform: scale(1.7) translateX(10%); */
+  transform: scale(1.7);
 }
 
-.card img:hover {
+.card:hover img {
   transition: transform 0.5s;
-  transform: scale(1.6);
+  transform: scale(1.85);
+  /* transform: scale(1.9) translate(2%); */
+}
+
+.card:hover .card-name h4 {
+  color: var(--secondary);
 }
 
 .img-wrapper {
   overflow: hidden;
+  background-color: var(--background-900);
+
+  background-size: cover;
+  background-position: left center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+
+  background: linear-gradient(
+    180deg,
+    var(--background) 0%,
+    var(--background-900) 75%,
+    var(--background-800) 100%
+  );
+
+  background: linear-gradient(
+    180deg,
+    var(--background-950) 0%,
+    var(--background-900) 75%,
+    var(--background-800) 100%
+  );
 }
 
 .card {
-  border: 1px solid white;
+  border: 2px solid var(--background-800);
+}
+.card:hover {
+  box-shadow: 0 0 var(--space-3x) var(--secondary);
 }
 
 .card-name {
-  padding: var(--space-1x) var(--space-2x);
+  padding: 4px var(--space-2x);
   background-color: var(--text);
   color: var(--background);
+}
+
+/* Overlay */
+.overlay {
+  background-color: #10151a9a;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.overlay > h2 {
+  font-size: 4.5rem;
+  text-shadow: 0 0 var(--space-1x) var(--background-alpha80);
+}
+
+/* buttons */
+
+.btn {
+  padding: var(--space-2x) var(--space-2x);
+  font-family: "Lexend";
+  font-weight: 500;
+  font-size: 1.2rem;
+  border: 0px;
+}
+
+.btn-primary {
+  color: var(--primary);
+  cursor: pointer;
+}
+
+.restart-btn:hover {
+  transition: box-shadow 0.3s ease-out, color 0.3s ease-out;
+  box-shadow: 0 0 var(--space-4x) var(--secondary);
+  color: var(--secondary);
+}
+.restart-btn {
+  transition: box-shadow 1s ease-out, color 1s ease-in;
+  color: var(--background);
+}
+
+/* animations */
+.maxScore.change {
+  animation: 1s change-color;
+}
+.restart-btn.glow {
+  animation: 2s glow;
+}
+@keyframes change-color {
+  from {
+    color: var(--text);
+  }
+  50% {
+    color: var(--primary-500);
+  }
+  to {
+    color: var(--text);
+  }
+}
+
+@keyframes glow {
+  from {
+    transition: box-shadow 1s ease-out, color 1s ease-in;
+    color: var(--background);
+  }
+  50% {
+    transition: box-shadow 0.5s ease-out, color 0.3s ease-out;
+    box-shadow: 0 0 var(--space-4x) var(--secondary);
+    color: var(--primary);
+  }
+  to {
+    transition: box-shadow 1s ease-out, color 1s ease-in;
+    color: var(--background);
+  }
+}
+
+@media screen and (max-width: 1030px) {
+  .title-info > h1 {
+    font-size: 2.442rem;
+  }
+  .game-info h3 {
+    font-size: 1.563rem;
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .header {
+    display: grid;
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .header > .game-info {
+    align-items: center;
+    justify-content: space-evenly;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .title-info > h1 {
+    font-size: 1.954rem;
+  }
+  .game-info h3 {
+    font-size: 1.25rem;
+  }
 }
