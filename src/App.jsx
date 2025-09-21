@@ -1,22 +1,11 @@
 import { useEffect, useState } from "react";
-import agentsJSON from "./agentsJSON.json";
-import "./App.css";
-import { Card } from "./components/Card";
+import { CardDeck } from "./components/CardDeck";
+import { Footer } from "./components/Footer";
+import { Header } from "./components/Header";
+import "./styles/App.css";
 
 const DECK_SIZE = 12;
-const agentsProcessed = processData(agentsJSON.data);
-
-function Cards({ agents, handleCardClick, blur }) {
-  const classList = "card-grid" + (blur ? " blur" : "");
-
-  return (
-    <div className={classList}>
-      {agents.map((agent) => (
-        <Card key={agent.uuid} {...agent} handleCardClick={handleCardClick} />
-      ))}
-    </div>
-  );
-}
+let agentsProcessed = [];
 
 async function getData() {
   const url = "https://valorant-api.com/v1/agents";
@@ -27,6 +16,7 @@ async function getData() {
     }
 
     const json = await response.json();
+    agentsProcessed = json;
     return json.data;
   } catch (error) {
     console.error(error.message);
@@ -42,18 +32,19 @@ function processData(agents) {
         displayName: agent.displayName,
         image: agent.fullPortrait,
         bgImage: agent.background,
+        bgGradient: agent.backgroundGradientColors,
       });
     }
   }
   return newAgents;
 }
 
-function initData() {
-  shuffleArray(agentsProcessed);
+function initData(agents) {
+  shuffleArray(agents);
   const newAgents = [];
-  for (let index in agentsProcessed) {
+  for (let index in agents) {
     if (index < DECK_SIZE) {
-      newAgents[index] = { ...agentsProcessed[index], clicked: false };
+      newAgents[index] = { ...agents[index], clicked: false };
     } else {
       break;
     }
@@ -79,12 +70,15 @@ function GameController() {
   const [maxScore, setMaxScore] = useState(0);
   const [agents, setAgents] = useState([]);
   const [playingRound, setPlayingRound] = useState(true);
+
   const [glowingBtn, setGlowingBtn] = useState(false);
   const [newMaxScore, setNewMaxScore] = useState(false);
 
   useEffect(() => {
-    // getData().then((json) => setAgents(json));
-    setAgents(initData());
+    getData().then((json) => {
+      agentsProcessed = processData(json);
+      setAgents(initData(agentsProcessed));
+    });
   }, []);
 
   function setClicked(uuid) {
@@ -116,8 +110,11 @@ function GameController() {
     setPlayingRound(false);
   }
 
-  // Event Handlers
+  function addGlowing() {
+    setGlowingBtn(true);
+  }
 
+  // Event Handlers
   function handleCardClick(event, uuid, clicked) {
     if (!clicked) {
       setClicked(uuid);
@@ -129,57 +126,33 @@ function GameController() {
   }
 
   function handleStartBtn(event) {
-    setAgents(initData());
+    setAgents(initData(agentsProcessed));
     setScore(0);
+
     if (!playingRound) {
       setPlayingRound((playingRound) => !playingRound);
     }
-    setGlowingBtn(false);
-  }
-
-  function glowRestartBtn(event) {
-    setGlowingBtn((glowing) => !glowing);
   }
 
   return (
     <>
-      <div className="header">
-        <div className="title-info">
-          <h1>Memory Card Game</h1>
-          <p>
-            Click on the cards to earn points, but don't click on the same card
-            twice.
-          </p>
-        </div>
-        <div className="game-info">
-          <button
-            onClick={handleStartBtn}
-            onAnimationEnd={() => setGlowingBtn(false)}
-            className={
-              "btn btn-primary restart-btn" + (glowingBtn ? " glow" : "")
-            }
-          >
-            Play Again
-          </button>
-          <div>
-            <h3>Score: {score}</h3>
-            <h3
-              onAnimationEnd={() => setNewMaxScore(false)}
-              className={"maxScore" + (newMaxScore ? " change" : "")}
-            >
-              Max. Score: {maxScore}
-            </h3>
-          </div>
-        </div>
-      </div>
+      <Header
+        handleStartBtn={handleStartBtn}
+        glowingBtn={glowingBtn}
+        setGlowingBtn={setGlowingBtn}
+        score={score}
+        maxScore={maxScore}
+        newMaxScore={newMaxScore}
+        setNewMaxScore={setNewMaxScore}
+      />
       <div className="cards">
-        <Cards
+        <CardDeck
           agents={agents}
           handleCardClick={handleCardClick}
           blur={!playingRound}
         />
         {playingRound ? null : (
-          <div className="overlay" onClick={glowRestartBtn}>
+          <div className="overlay" onClick={addGlowing}>
             <h2>Game Over</h2>
           </div>
         )}
@@ -189,7 +162,12 @@ function GameController() {
 }
 
 function App() {
-  return <GameController />;
+  return (
+    <>
+      <GameController />
+      <Footer />
+    </>
+  );
 }
 
 export default App;

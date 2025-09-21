@@ -16,19 +16,22 @@
 
 .img-wrapper {
   overflow: hidden;
-  background-color: var(--background-900);
+  /* background-color: var(--background-950); */
 
-  background-size: cover;
-  background-position: left center;
+  background-image: var(--img),
+    linear-gradient(
+      180deg,
+      var(--gradient0) 0%,
+      var(--gradient1) 50%,
+      var(--gradient2) 80%,
+      var(--gradient3) 100%
+    ),
+    linear-gradient(180deg, var(--background-alpha60));
+
+  background-size: 120%;
   background-repeat: no-repeat;
-  overflow: hidden;
-
-  background: linear-gradient(
-    180deg,
-    var(--background-950) 0%,
-    var(--background-900) 75%,
-    var(--background-800) 100%
-  );
+  background-position: center;
+  background-blend-mode: overlay;
 }
 
 .card-name {
@@ -44,7 +47,9 @@
 
 .card:hover img {
   transition: transform 0.5s ease;
-  transform: scale(1.85);
+  transform: scale(1.8);
+  filter: drop-shadow(0 0 2px var(--gradient1));
+  backdrop-filter: blur(1px);
 }
 
 .card:hover .card-name h4 {
