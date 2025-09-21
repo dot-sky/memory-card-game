@@ -3,6 +3,8 @@
 A minimal and fun memory game built with **React**, **Vanilla CSS**, and the **Valorant API**.  
 Test your memory by clicking on Valorant agents, but make sure not to select the same one twice.
 
+![Valorant memory game screenshot](docs/memory-card-ss.png)
+
 ## 🚀 Live Demo
 
 Check out the live app here: [Valorant Memory Game](https://valorant-memory-game.vercel.app/)
