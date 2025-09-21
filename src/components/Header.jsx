@@ -12,7 +12,7 @@ function Header({
   return (
     <div className="header">
       <div className="title-info">
-        <h1>Memory Card Game</h1>
+        <h1>Valorant Memory Game</h1>
         <p>
           Click on the cards to earn points, but don't click on the same card
           twice.
